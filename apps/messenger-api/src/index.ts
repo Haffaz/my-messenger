@@ -1,35 +1,34 @@
-import { type RootResolver, graphqlServer } from "@hono/graphql-server";
-import { buildSchema } from "graphql";
-import { Hono } from "hono";
+import express from 'express';
+import { GraphQLObjectType, GraphQLSchema, GraphQLString } from 'graphql';
+import { createHandler } from 'graphql-http/lib/use/express';
 
-const app = new Hono();
+// Define a basic GraphQL schema
+const schema = new GraphQLSchema({
+  query: new GraphQLObjectType({
+    name: 'Query',
+    fields: {
+      hello: {
+        type: GraphQLString,
+        resolve: () => 'Hello, World!'
+      }
+    }
+  })
+});
 
-const schema = buildSchema(`
-  type Query {
-    hello: String!
-  }
-`);
+// Create Express app
+const app = express();
+const PORT = 4000;
 
-const rootResolver: RootResolver = (_) => {
-  return {
-    hello: () => "Hello world!",
-  };
-};
+// GraphQL endpoint
+app.use('/graphql', createHandler({ schema }));
 
-app.use(
-  "/graphql",
-  graphqlServer({
-    schema,
-    rootResolver,
-    graphiql: true,
-  }),
-);
+// Optional: Add a basic REST endpoint
+app.get('/', (_, res) => {
+  res.send('Welcome to GraphQL Server! Try /graphql endpoint');
+});
 
-const port = process.env.PORT || 3000;
-
-console.log(`Hono 🥟 GraphQL Server Listening on port ${port}`);
-
-export default {
-  port,
-  fetch: app.fetch,
-};
+// Start the server
+app.listen(PORT, () => {
+  console.log(`🚀 Server running at http://localhost:${PORT}`);
+  console.log(`📊 GraphQL endpoint: http://localhost:${PORT}/graphql`);
+});
