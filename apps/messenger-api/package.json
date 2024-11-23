@@ -4,6 +4,8 @@
     "dev": "bun run --hot src/index.ts"
   },
   "dependencies": {
+    "@hono/graphql-server": "^0.5.1",
+    "graphql": "^16.9.0",
     "hono": "^4.6.11"
   },
   "devDependencies": {
