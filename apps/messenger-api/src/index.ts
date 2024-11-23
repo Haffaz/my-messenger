@@ -11,18 +11,18 @@ const schema = buildSchema(`
 `);
 
 const rootResolver: RootResolver = (_) => {
-	return {
-		hello: () => "Hello world!",
-	};
+  return {
+    hello: () => "Hello world!",
+  };
 };
 
 app.use(
-	"/graphql",
-	graphqlServer({
-		schema,
-		rootResolver,
-		graphiql: true,
-	}),
+  "/graphql",
+  graphqlServer({
+    schema,
+    rootResolver,
+    graphiql: true,
+  }),
 );
 
 const port = process.env.PORT || 3000;
@@ -30,6 +30,6 @@ const port = process.env.PORT || 3000;
 console.log(`Hono 🥟 GraphQL Server Listening on port ${port}`);
 
 export default {
-	port,
-	fetch: app.fetch,
+  port,
+  fetch: app.fetch,
 };

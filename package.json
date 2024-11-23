@@ -4,13 +4,15 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
-    "lint": "turbo lint",
-    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+    "lint": "biome lint .",
+    "format": "biome format --write .",
+    "check": "biome check --apply ."
   },
   "devDependencies": {
     "prettier": "^3.2.5",
     "turbo": "^2.3.1",
-    "typescript": "5.5.4"
+    "typescript": "5.5.4",
+    "@biomejs/biome": "1.5.3"
   },
   "packageManager": "pnpm@8.15.6",
   "engines": {
