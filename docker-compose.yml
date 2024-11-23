@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: apps/messenger-web/Dockerfile
+      target: development
+    volumes:
+      - ./apps/messenger-web:/app/apps/messenger-web
+      - ./packages:/app/packages
+      - ./package.json:/app/package.json
+      - ./pnpm-lock.yaml:/app/pnpm-lock.yaml
+      - ./turbo.json:/app/turbo.json
+      - ./.pnpm-store:/app/.pnpm-store
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
+    command: pnpm run dev
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/messenger-api/Dockerfile
+      target: development
+    volumes:
+      - ./apps/messenger-api:/app/apps/messenger-api
+      - ./packages:/app/packages
+      - ./package.json:/app/package.json
+      - ./pnpm-lock.yaml:/app/pnpm-lock.yaml
+      - ./turbo.json:/app/turbo.json
+      - ./.pnpm-store:/app/.pnpm-store
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+    command: pnpm run dev 
