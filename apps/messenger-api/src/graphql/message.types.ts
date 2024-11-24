@@ -8,6 +8,7 @@ export const messageTypeDefs = `#graphql
 
   extend type Query {
     messages(threadId: ID!): [Message!]!
+    lastMessage(threadId: ID!): Message!
   }
 
   input SendMessageInput {

@@ -4,9 +4,18 @@ import { Context } from "../types/context";
 
 export const messageResolvers = {
     Query: {
-        messages: async (_parent: unknown, { threadId }: { threadId: string }, context: Context) => {
-            return context.prisma.message.findMany({ where: { threadId: threadId } });
+        messages: async (_: any, { threadId }: { threadId: string }, { prisma }: Context) => {
+            return prisma.message.findMany({
+                where: { threadId },
+                orderBy: { createdAt: 'asc' }
+            });
         },
+        lastMessage: async (_: any, { threadId }: { threadId: string }, { prisma }: Context) => {
+            return prisma.message.findFirst({
+                where: { threadId },
+                orderBy: { createdAt: 'desc' }
+            });
+        }
     },
     Mutation: {
         sendMessage: async (_parent: unknown, { input }: { input: SendMessageInput }, { prisma }: Context) => {
