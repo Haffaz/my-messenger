@@ -7,7 +7,7 @@ import { comparePasswords } from '../utils/password';
 
 export const authResolvers = {
   Mutation: {
-    login: async (_, { input }: { input: LoginInput }, context: Context) => {
+    login: async (_parent: unknown, { input }: { input: LoginInput }, context: Context) => {
       try {
         // Validate input using Zod
         const validatedInput = loginSchema.parse(input);

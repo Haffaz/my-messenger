@@ -4,12 +4,12 @@ import { Context } from "../types/context";
 
 export const messageResolvers = {
     Query: {
-        messages: async (_, { threadId }: { threadId: string }, context: Context) => {
+        messages: async (_parent: unknown, { threadId }: { threadId: string }, context: Context) => {
             return context.prisma.message.findMany({ where: { threadId: threadId } });
         },
     },
     Mutation: {
-        sendMessage: async (_, { input }: { input: SendMessageInput }, { prisma }: Context) => {
+        sendMessage: async (_parent: unknown, { input }: { input: SendMessageInput }, { prisma }: Context) => {
             try {
                 const validatedInput = sendMessageInputSchema.parse(input);
                 return prisma.$transaction(async(tx) => {
