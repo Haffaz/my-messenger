@@ -1,4 +1,5 @@
 import { authTypeDefs } from './auth.types';
+import { messagesTypeDefs } from './messages.types';
 
 export const baseTypeDefs = `#graphql
   type User {
@@ -17,4 +18,5 @@ export const baseTypeDefs = `#graphql
 export const typeDefs = `#graphql
   ${baseTypeDefs}
   ${authTypeDefs}
+  ${messagesTypeDefs}
 `; 

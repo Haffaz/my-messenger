@@ -1,4 +1,5 @@
 import { authResolvers } from './auth.resolvers';
+import { messagesResolvers } from './messages.resolvers';
 
 export const baseResolvers = {
   Query: {
@@ -9,4 +10,5 @@ export const baseResolvers = {
 export const resolvers = {
   ...baseResolvers,
   ...authResolvers,
+  ...messagesResolvers,
 }; 

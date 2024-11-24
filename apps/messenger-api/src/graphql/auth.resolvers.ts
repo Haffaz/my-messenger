@@ -26,7 +26,7 @@ export const authResolvers = {
         // Verify password
         const isValidPassword = await comparePasswords(
           validatedInput.password,
-          user.password_hash
+          user.passwordHash
         );
 
         if (!isValidPassword) {
