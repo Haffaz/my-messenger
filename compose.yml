@@ -16,7 +16,7 @@ services:
     environment:
       - NODE_ENV=development
     depends_on:
-      - postgres
+      - db
 
   web:
     container_name: web
@@ -35,8 +35,8 @@ services:
     environment:
       - NODE_ENV=development
 
-  postgres:
-    container_name: postgres
+  db:
+    container_name: db
     image: postgres:latest
     restart: always
     environment:
