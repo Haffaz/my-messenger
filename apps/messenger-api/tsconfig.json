@@ -7,7 +7,9 @@
     "sourceMap": true,
     "esModuleInterop": true,
     "outDir": "dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "lib": ["ES2020"],
+    "types": ["Node"]
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

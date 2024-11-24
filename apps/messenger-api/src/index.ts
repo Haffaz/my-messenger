@@ -1,52 +1,41 @@
-import { makeExecutableSchema } from '@graphql-tools/schema';
-import { PrismaClient } from '@prisma/client';
 import express from 'express';
-import { createHandler } from 'graphql-http/lib/use/express';
 
+import { ApolloServer } from '@apollo/server';
+import { expressMiddleware } from '@apollo/server/express4';
+import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import cors from 'cors';
+
+import { PrismaClient } from '@prisma/client';
+import http from 'http';
 import { resolvers } from './graphql/resolvers';
 import { typeDefs } from './graphql/types';
-import { Context } from './types/context';
+
+const app = express();
 
 const prisma = new PrismaClient();
 
-// Create executable schema
-const schema = makeExecutableSchema({
+const httpServer = http.createServer(app);
+
+const server = new ApolloServer({
   typeDefs,
   resolvers,
+  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
 });
 
-// Create Express app
-const app = express();
-const PORT = process.env.PORT || 4000;
+await server.start();
 
-// Add JSON parsing middleware
-app.use(express.json());
-
-
-// GraphQL endpoint
 app.use(
-  '/graphql',
-  // TODO: Remove this before deploying
+  '/',
   cors<cors.CorsRequest>({ origin: ['http://localhost:5173'] }),
-  createHandler({
-    schema,
-    context: (): Context => ({
-      prisma,
-    }),
+  express.json({ limit: '50mb' }),
+  expressMiddleware(server, {
+    context: async ({ req }) => ({ token: req.headers.token, prisma }),
   })
 );
 
-// Health check endpoint
-app.get('/health', (_, res) => {
-  res.json({ status: 'ok' });
-});
+await new Promise<void>(resolve => httpServer.listen({ port: 4000 }, resolve));
+console.log(`🚀 Server ready at http://localhost:4000/`);
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`🚀 Server running at http://localhost:${PORT}`);
-  console.log(`📊 GraphQL endpoint: http://localhost:${PORT}/graphql`);
-});
 
 // Graceful shutdown
 process.on('SIGTERM', async () => {
