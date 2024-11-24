@@ -7,11 +7,11 @@ async function main() {
     data: [
       {
         username: "john",
-        password_hash: "$2a$12$LJnC8VThOsThRHFYkW2yqeEXu6CY5tr3djMTbvHxkahsort1Q6EjG",
+        passwordHash: "$2a$12$LJnC8VThOsThRHFYkW2yqeEXu6CY5tr3djMTbvHxkahsort1Q6EjG",
       },
       {
         username: "jane",
-        password_hash: "$2a$12$LJnC8VThOsThRHFYkW2yqeEXu6CY5tr3djMTbvHxkahsort1Q6EjG",
+        passwordHash: "$2a$12$LJnC8VThOsThRHFYkW2yqeEXu6CY5tr3djMTbvHxkahsort1Q6EjG",
       },
     ],
   });

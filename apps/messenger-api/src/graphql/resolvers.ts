@@ -1,14 +1,16 @@
-import { authResolvers } from './auth.resolvers';
-import { messagesResolvers } from './messages.resolvers';
+import { authResolvers } from "./auth.resolvers";
+import { messageResolvers } from "./message.resolvers";
+import { threadResolvers } from "./thread.resolvers";
 
-export const baseResolvers = {
+const baseResolvers = {
   Query: {
     hello: (): string => 'Hello, world!',
   },
 };
 
-export const resolvers = {
-  ...baseResolvers,
-  ...authResolvers,
-  ...messagesResolvers,
-}; 
+export const resolvers = [  
+  baseResolvers,
+  authResolvers,
+  messageResolvers,
+  threadResolvers,
+]; 

@@ -1,13 +1,12 @@
-export const messagesTypeDefs = `#graphql
+export const messageTypeDefs = `#graphql
   type Message {
     id: ID!
     content: String!
     senderId: ID!
-    receiverId: ID!
     threadId: ID!
   }
 
-  type Query {
+  extend type Query {
     messages(threadId: ID!): [Message!]!
   }
 
@@ -18,7 +17,7 @@ export const messagesTypeDefs = `#graphql
     threadId: ID
   }
 
-  type Mutation {
+  extend type Mutation {
     sendMessage(input: SendMessageInput!): Message!
   }
 `; 

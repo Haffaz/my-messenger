@@ -14,6 +14,7 @@ CREATE TABLE "threads" (
     "id" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
+    "created_by_id" TEXT NOT NULL,
 
     CONSTRAINT "threads_pkey" PRIMARY KEY ("id")
 );
@@ -49,13 +50,13 @@ CREATE INDEX "messages_thread_id_idx" ON "messages"("thread_id");
 CREATE INDEX "messages_sender_id_idx" ON "messages"("sender_id");
 
 -- CreateIndex
-CREATE INDEX "messages_created_at_idx" ON "messages"("created_at");
-
--- CreateIndex
 CREATE UNIQUE INDEX "_ThreadParticipants_AB_unique" ON "_ThreadParticipants"("A", "B");
 
 -- CreateIndex
 CREATE INDEX "_ThreadParticipants_B_index" ON "_ThreadParticipants"("B");
+
+-- AddForeignKey
+ALTER TABLE "threads" ADD CONSTRAINT "threads_created_by_id_fkey" FOREIGN KEY ("created_by_id") REFERENCES "users"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "messages" ADD CONSTRAINT "messages_thread_id_fkey" FOREIGN KEY ("thread_id") REFERENCES "threads"("id") ON DELETE CASCADE ON UPDATE CASCADE;

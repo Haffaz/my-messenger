@@ -9,7 +9,7 @@ export const authTypeDefs = `#graphql
     password: String!
   }
 
-  type Mutation {
+  extend type Mutation {
     login(input: LoginInput!): AuthPayload!
   }
 `; 

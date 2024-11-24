@@ -14,37 +14,40 @@ datasource db {
 }
 
 model User {
-  id            String   @id @default(cuid())
-  username      String   @unique
-  passwordHash  String   @map("password_hash")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-  threads       Thread[]  @relation("ThreadParticipants")
-  messages      Message[]
+  id           String    @id @default(cuid())
+  username     String    @unique
+  passwordHash String    @map("password_hash")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  threads      Thread[]  @relation("ThreadParticipants")
+  messages     Message[]
+  Thread       Thread[]
 
   @@index([username])
   @@map("users")
 }
 
 model Thread {
-  id            String   @id @default(cuid())
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-  participants  User[]   @relation("ThreadParticipants")  
-  messages      Message[]
+  id           String    @id @default(cuid())
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+  createdById  String    @map("created_by_id")
+  createdBy    User      @relation(fields: [createdById], references: [id])
+  participants User[]    @relation("ThreadParticipants")
+  messages     Message[]
 
   @@map("threads")
 }
 
 model Message {
-  id            String   @id @default(cuid())
-  content       String   @db.Text
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
-  threadId      String   @map("thread_id")
-  thread        Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
-  senderId      String   @map("sender_id")
-  sender        User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  threadId  String   @map("thread_id")
+  thread    Thread   @relation(fields: [threadId], references: [id], onDelete: Cascade)
+  senderId  String   @map("sender_id")
+  sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
 
   @@index([threadId])
   @@index([senderId])

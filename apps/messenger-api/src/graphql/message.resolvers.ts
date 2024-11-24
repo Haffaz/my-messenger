@@ -1,8 +1,8 @@
 import { GraphQLError } from "graphql";
-import { SendMessageInput, sendMessageInputSchema } from "../schemas/messeges.schema";
+import { SendMessageInput, sendMessageInputSchema } from "../schemas/messege.schema";
 import { Context } from "../types/context";
 
-export const messagesResolvers = {
+export const messageResolvers = {
     Query: {
         messages: async (_, { threadId }: { threadId: string }, context: Context) => {
             return context.prisma.message.findMany({ where: { threadId: threadId } });
@@ -21,6 +21,7 @@ export const messagesResolvers = {
                     if (!thread) {
                         thread = await tx.thread.create({
                             data: {
+                                createdById: validatedInput.senderId,
                                 participants: {
                                     connect: [
                                         { id: validatedInput.senderId },
