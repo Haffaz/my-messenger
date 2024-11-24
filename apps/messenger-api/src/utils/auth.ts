@@ -8,7 +8,8 @@ export const getUser = async (
   token: string,
   prisma: PrismaClient
 ): Promise<UserInterface | null> => {
-  const decoded = jwt.verify(token, process.env.JWT_SECRET!) as DecodedToken;
+  const tokenValue = token.startsWith('Bearer ') ? token.split(' ')[1] : token;
+  const decoded = jwt.verify(tokenValue, process.env.JWT_SECRET!) as DecodedToken;
   return prisma.user.findUnique({
     where: { id: decoded.userId },
     select: { id: true, username: true },
