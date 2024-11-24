@@ -1,9 +1,10 @@
 FROM node:20-alpine AS base
 
-# Install pnpm
+# Install specific pnpm version
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:$PATH"
 RUN corepack enable
+RUN corepack prepare pnpm@9.14.2 --activate
 
 FROM base AS builder
 RUN apk update
@@ -13,7 +14,6 @@ RUN pnpm install -g turbo
 COPY . .
  
 # Generate a partial monorepo with a pruned lockfile for a target workspace.
-# Assuming "web" is the name entered in the project's package.json: { name: "web" }
 RUN turbo prune messenger-web --docker
 
 FROM base AS installer
@@ -23,7 +23,9 @@ WORKDIR /app
 
 # First install the dependencies (as they change less often)
 COPY --from=builder /app/out/json/ .
-RUN pnpm install
+COPY --from=builder /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+# Install all dependencies including devDependencies
+RUN pnpm install --frozen-lockfile --prod=false
  
 # Build the project
 COPY --from=builder /app/out/full/ .
@@ -35,7 +37,7 @@ WORKDIR /app
 # Use a static file server since this is a frontend app
 RUN pnpm add -g serve
 
-COPY --from=installer /app .
+COPY --from=installer /app/apps/messenger-web/dist .
 
 # Serve the static files instead of trying to run node
-CMD serve -s dist
+CMD ["serve", "-s", ".", "-p", "5173"]

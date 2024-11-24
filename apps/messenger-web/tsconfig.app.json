@@ -9,12 +9,13 @@
 		"skipLibCheck": true,
 
 		/* Bundler mode */
-		"moduleResolution": "Bundler",
+		"moduleResolution": "node",
 		"allowImportingTsExtensions": true,
 		"isolatedModules": true,
 		"moduleDetection": "force",
 		"noEmit": true,
 		"jsx": "react-jsx",
+		"outDir": "./dist",
 
 		/* Linting */
 		"strict": true,
@@ -22,5 +23,6 @@
 		"noUnusedParameters": true,
 		"noFallthroughCasesInSwitch": true
 	},
+	"exclude": ["node_modules"],
 	"include": ["src"]
 }

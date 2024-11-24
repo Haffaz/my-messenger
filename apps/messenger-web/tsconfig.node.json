@@ -8,12 +8,12 @@
 		"skipLibCheck": true,
 
 		/* Bundler mode */
-		"moduleResolution": "Bundler",
+		"moduleResolution": "node",
 		"allowImportingTsExtensions": true,
 		"isolatedModules": true,
 		"moduleDetection": "force",
 		"noEmit": true,
-
+		"outDir": "./dist",
 		/* Linting */
 		"strict": true,
 		"noUnusedLocals": true,
