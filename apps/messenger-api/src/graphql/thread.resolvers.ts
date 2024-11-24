@@ -3,8 +3,25 @@ import { Context } from "../types/context";
 
 export const threadResolvers = {
     Query: {
-        threads: async (_parent: unknown, _args: unknown, { prisma }: Context) => {
-            return prisma.thread.findMany();
+        threads: async (_parent: unknown, _args: unknown, { prisma, user }: Context) => {
+            
+            return prisma.thread.findMany({
+                where: {
+                    participants: {
+                        some: {
+                            id: user.id
+                        }
+                    }
+                },
+                include: {
+                    participants: true,
+                    messages: {
+                        orderBy: {
+                            createdAt: 'desc'
+                        }
+                    }
+                }
+            });
         }
     },
     Mutation: {

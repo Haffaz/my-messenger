@@ -35,7 +35,7 @@ app.use(
     context: async ({ req }): Promise<Context> => {   
       
       if (req.body?.operationName === 'Login') {
-        return { prisma };
+        return { prisma, user: null };
       }
 
       const token = req.headers.authorization || '';
