@@ -11,7 +11,7 @@ import http from 'http';
 import { resolvers } from './graphql/resolvers';
 import { typeDefs } from './graphql/types';
 import { Context } from './types/context';
-import { getUser } from './utils/user';
+import { getUser } from './utils/auth';
 
 const app = express();
 
@@ -32,7 +32,12 @@ app.use(
   cors<cors.CorsRequest>({ origin: ['http://localhost:5173'] }),
   express.json({ limit: '50mb' }),
   expressMiddleware(server, {
-    context: async ({ req }): Promise<Context> => {
+    context: async ({ req }): Promise<Context> => {   
+      
+      if (req.body?.operationName === 'Login') {
+        return { prisma };
+      }
+
       const token = req.headers.authorization || '';
       const user = await getUser(token, prisma);
 

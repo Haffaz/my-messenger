@@ -5,4 +5,6 @@ export type UserInterface = Pick<User, 'id' | 'username'>;
 export type Context = {
   prisma: PrismaClient;
   user: UserInterface;
+} | {
+  prisma: PrismaClient;
 };
