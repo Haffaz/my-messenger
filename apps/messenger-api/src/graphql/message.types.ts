@@ -13,7 +13,7 @@ export const messageTypeDefs = `#graphql
   input SendMessageInput {
     content: String!  
     senderId: ID!
-    receiverId: ID!
+    receiverUsername: String!
     threadId: ID
   }
 

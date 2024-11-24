@@ -7,7 +7,7 @@ export const sendMessageInputSchema = z.object({
     .max(2000, 'Message content cannot exceed 2000 characters'),
   threadId: z.string().optional(),
   senderId: z.string(),
-  receiverId: z.string(),
+  receiverUsername: z.string(),
 });
 
 export const getMessagesSchema = z.object({

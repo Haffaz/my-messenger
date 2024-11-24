@@ -16,7 +16,15 @@ export const messageResolvers = {
                     let thread = await tx.thread.findFirst({ 
                         where: { id: validatedInput.threadId } 
                     });
-    
+
+                    const receiver = await tx.user.findUnique({
+                        where: { username: validatedInput.receiverUsername }
+                    });
+
+                    if (!receiver) {
+                        throw new GraphQLError('Receiver not found', { extensions: { code: 'BAD_REQUEST' } });
+                    }
+
                     // If thread doesn't exist, create a new one
                     if (!thread) {
                         thread = await tx.thread.create({
@@ -25,7 +33,7 @@ export const messageResolvers = {
                                 participants: {
                                     connect: [
                                         { id: validatedInput.senderId },
-                                        { id: validatedInput.receiverId }
+                                        { id: receiver.id }
                                     ]
                                 }
                             }
