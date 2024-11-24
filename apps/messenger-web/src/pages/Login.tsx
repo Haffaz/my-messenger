@@ -1,5 +1,5 @@
 import { gql, useMutation } from "@apollo/client";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 
@@ -18,16 +18,23 @@ const LOGIN_MUTATION = gql`
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { setUser, setToken } = useUser();
+  const { setUser, setToken, token } = useUser();
   const navigate = useNavigate();
 
   const [login, { loading, error }] = useMutation(LOGIN_MUTATION, {
     onCompleted: (data) => {
       setUser(data.login.user);
       setToken(data.login.token);
+      localStorage.setItem("token", data.login.token);
       navigate("/messages");
     },
   });
+
+  useEffect(() => {
+    if (token) {
+      navigate("/messages");
+    }
+  }, [token, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
