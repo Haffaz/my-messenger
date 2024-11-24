@@ -3,6 +3,7 @@ import { PrismaClient } from '@prisma/client';
 import express from 'express';
 import { createHandler } from 'graphql-http/lib/use/express';
 
+import cors from 'cors';
 import { resolvers } from './graphql/resolvers';
 import { typeDefs } from './graphql/types';
 import { Context } from './types/context';
@@ -22,9 +23,12 @@ const PORT = process.env.PORT || 4000;
 // Add JSON parsing middleware
 app.use(express.json());
 
+
 // GraphQL endpoint
 app.use(
   '/graphql',
+  // TODO: Remove this before deploying
+  cors<cors.CorsRequest>({ origin: ['http://localhost:5173'] }),
   createHandler({
     schema,
     context: (): Context => ({
