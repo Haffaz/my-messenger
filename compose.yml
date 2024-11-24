@@ -3,20 +3,38 @@ services:
     container_name: api
     build:
       context: .
-      dockerfile: ./apps/messenger-api/Dockerfile
+      dockerfile: apps/messenger-api/Dockerfile
+      target: installer
+    command: pnpm --filter messenger-api dev
     restart: always
     ports:
       - 4000:4000
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/apps/messenger-api/node_modules
+    environment:
+      - NODE_ENV=development
     depends_on:
       - postgres
+
   web:
     container_name: web
     build:
       context: .
-      dockerfile: ./apps/messenger-web/Dockerfile
+      dockerfile: apps/messenger-web/Dockerfile
+      target: installer
+    command: pnpm --filter messenger-web dev
     restart: always
     ports:
       - 5173:5173
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/apps/messenger-web/node_modules
+    environment:
+      - NODE_ENV=development
+
   postgres:
     container_name: postgres
     image: postgres:latest
