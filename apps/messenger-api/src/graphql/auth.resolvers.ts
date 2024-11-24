@@ -7,7 +7,7 @@ import { comparePasswords } from '../utils/password';
 
 export const authResolvers = {
   Mutation: {
-    login: async (_, { input }: { input: LoginInput }, context: Context) => {
+    login: async (_parent: unknown, { input }: { input: LoginInput }, context: Context) => {
       try {
         // Validate input using Zod
         const validatedInput = loginSchema.parse(input);
@@ -19,7 +19,7 @@ export const authResolvers = {
 
         if (!user) {
           throw new GraphQLError('Invalid credentials', {
-            extensions: { code: 'UNAUTHORIZED' },
+            extensions: { code: 'UNAUTHORIZED', http: { status: 401 } },
           });
         }
 
@@ -31,12 +31,12 @@ export const authResolvers = {
 
         if (!isValidPassword) {
           throw new GraphQLError('Invalid credentials', {
-            extensions: { code: 'UNAUTHORIZED' },
+            extensions: { code: 'UNAUTHORIZED', http: { status: 401 } },
           });
         }
 
         // Generate JWT token
-        const token = generateAuthToken(user);
+        const token = generateAuthToken({ id: user.id });
 
         return {
           token,
@@ -47,6 +47,7 @@ export const authResolvers = {
           throw new GraphQLError('Validation error', {
             extensions: {
               code: 'BAD_USER_INPUT',
+              http: { status: 400 },
               validationErrors: error.errors,
             },
           });

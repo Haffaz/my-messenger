@@ -1,5 +1,10 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, User } from '@prisma/client';
 
-export interface Context {
+export type UserInterface = Pick<User, 'id' | 'username'>;
+
+export type Context = {
   prisma: PrismaClient;
-} 
+  user: UserInterface;
+} | {
+  prisma: PrismaClient;
+};
