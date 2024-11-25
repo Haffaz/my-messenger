@@ -29,7 +29,24 @@ const wsServer = new WebSocketServer({
   path: '/graphql',
 });
 
-const wsServerCleanup = useServer({ schema }, wsServer);
+const wsServerCleanup = useServer({ schema, 
+  context: async (ctx, _msg, _arg): Promise<Context> => {   
+    
+    const token = ctx.connectionParams?.authorization as string;
+    const user = await getUser(token, prisma);
+
+    if (!user) {
+      throw new GraphQLError('User is not authenticated', {
+        extensions: {
+          code: 'UNAUTHENTICATED',
+          http: { status: 401 },
+        },
+      });
+    }
+
+    return { prisma, user };
+  }
+ }, wsServer);
 
 const apolloServer = new ApolloServer<Context>({
   schema,

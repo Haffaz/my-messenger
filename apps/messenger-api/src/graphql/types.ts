@@ -15,6 +15,10 @@ export const baseTypeDefs = `#graphql
   type Mutation {
     _empty: String
   }
+
+  type Subscription {
+    messageCreated(threadId: ID!): Message!
+  }
 `;
 
 export const typeDefs = `#graphql
