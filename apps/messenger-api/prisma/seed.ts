@@ -7,11 +7,13 @@ async function main() {
     data: [
       {
         username: "john",
-        passwordHash: "$2a$12$LJnC8VThOsThRHFYkW2yqeEXu6CY5tr3djMTbvHxkahsort1Q6EjG",
+        passwordHash:
+          "$2a$12$LJnC8VThOsThRHFYkW2yqeEXu6CY5tr3djMTbvHxkahsort1Q6EjG",
       },
       {
         username: "jane",
-        passwordHash: "$2a$12$LJnC8VThOsThRHFYkW2yqeEXu6CY5tr3djMTbvHxkahsort1Q6EjG",
+        passwordHash:
+          "$2a$12$LJnC8VThOsThRHFYkW2yqeEXu6CY5tr3djMTbvHxkahsort1Q6EjG",
       },
     ],
   });
@@ -23,4 +25,4 @@ main()
   })
   .finally(async () => {
     await prisma.$disconnect();
-});
+  });

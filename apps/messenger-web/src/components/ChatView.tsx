@@ -1,6 +1,6 @@
-import { gql, useMutation, useQuery, useSubscription } from '@apollo/client';
-import { useState } from 'react';
-import { useUser } from '../contexts/UserContext';
+import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
+import { useState } from "react";
+import { useUser } from "../contexts/UserContext";
 
 const MESSAGE_SUBSCRIPTION = gql`
   subscription OnMessageSent($threadId: ID!) {
@@ -47,27 +47,30 @@ interface ChatViewProps {
 
 export default function ChatView({ threadId }: ChatViewProps) {
   const [messages, setMessages] = useState([]);
-  
+
   // Query initial messages
   const { loading } = useQuery(GET_MESSAGES, {
     variables: { threadId },
     onCompleted: (data) => {
       setMessages(data.messages);
-    }
+    },
   });
 
   // Subscribe to new messages
   useSubscription(MESSAGE_SUBSCRIPTION, {
     variables: { threadId },
     onData: ({ data }) => {
-      console.log('new message', data.data.messageCreated);
+      console.log("new message", data.data.messageCreated);
       if (data?.data?.messageCreated) {
-        setMessages((prevMessages) => [...prevMessages, data.data.messageCreated]);
+        setMessages((prevMessages) => [
+          ...prevMessages,
+          data.data.messageCreated,
+        ]);
       }
     },
   });
-  
-  const [message, setMessage] = useState('');
+
+  const [message, setMessage] = useState("");
 
   const { userId } = useUser();
 
@@ -88,12 +91,11 @@ export default function ChatView({ threadId }: ChatViewProps) {
           },
         },
       });
-      setMessage('');
+      setMessage("");
     } catch (error) {
-      console.error('Failed to send message:', error);
+      console.error("Failed to send message:", error);
     }
   };
-
 
   if (loading) return <div>Loading...</div>;
 
@@ -105,14 +107,14 @@ export default function ChatView({ threadId }: ChatViewProps) {
           <div
             key={msg.id}
             className={`flex ${
-              msg.sender.id === userId ? 'justify-end' : 'justify-start'
+              msg.sender.id === userId ? "justify-end" : "justify-start"
             }`}
           >
             <div
               className={`max-w-[70%] rounded-lg px-4 py-2 ${
                 msg.sender.id === userId
-                  ? 'bg-blue-500 text-white'
-                  : 'bg-gray-200'
+                  ? "bg-blue-500 text-white"
+                  : "bg-gray-200"
               }`}
             >
               <div className="text-sm font-medium">{msg.sender.username}</div>
@@ -142,4 +144,4 @@ export default function ChatView({ threadId }: ChatViewProps) {
       </form>
     </div>
   );
-} 
+}

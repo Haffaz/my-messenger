@@ -1,5 +1,10 @@
-import { ReactNode, createContext, useContext, useEffect, useState } from "react";
-
+import {
+  ReactNode,
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 interface UserContextType {
   userId: string | null;
@@ -36,4 +41,4 @@ export function useUser() {
     throw new Error("useUser must be used within a UserProvider");
   }
   return context;
-} 
+}

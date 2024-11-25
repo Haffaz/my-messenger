@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import ChatView from '../components/ChatView';
-import NewThreadDialog from '../components/NewThreadDialog';
-import ThreadList from '../components/ThreadList';
+import { useState } from "react";
+import ChatView from "../components/ChatView";
+import NewThreadDialog from "../components/NewThreadDialog";
+import ThreadList from "../components/ThreadList";
 
 export default function Messages() {
   const [selectedThreadId, setSelectedThreadId] = useState<string | null>(null);
@@ -19,9 +19,9 @@ export default function Messages() {
             New Message
           </button>
         </div>
-        <ThreadList 
-          selectedThreadId={selectedThreadId} 
-          onThreadSelect={setSelectedThreadId} 
+        <ThreadList
+          selectedThreadId={selectedThreadId}
+          onThreadSelect={setSelectedThreadId}
         />
       </div>
 

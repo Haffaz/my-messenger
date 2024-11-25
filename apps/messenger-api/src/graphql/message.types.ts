@@ -20,4 +20,4 @@ export const messageTypeDefs = `#graphql
   extend type Mutation {
     sendMessage(input: SendMessageInput!): Message!
   }
-`; 
+`;

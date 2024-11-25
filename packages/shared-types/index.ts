@@ -1,4 +1,3 @@
-export * from './src/auth';
-export * from './src/message';
-export * from './src/thread';
-
+export * from "./src/auth";
+export * from "./src/message";
+export * from "./src/thread";

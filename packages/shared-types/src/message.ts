@@ -1,10 +1,10 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 export const sendMessageInputSchema = z.object({
   content: z
     .string()
-    .min(1, 'Message content cannot be empty')
-    .max(2000, 'Message content cannot exceed 2000 characters'),
+    .min(1, "Message content cannot be empty")
+    .max(2000, "Message content cannot exceed 2000 characters"),
   threadId: z.string().optional(),
   receiverUsername: z.string().optional(),
 });

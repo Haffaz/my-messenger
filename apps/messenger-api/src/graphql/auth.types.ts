@@ -12,4 +12,4 @@ export const authTypeDefs = `#graphql
   extend type Mutation {
     login(input: LoginInput!): AuthPayload!
   }
-`; 
+`;

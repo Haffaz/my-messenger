@@ -1,6 +1,6 @@
-import { gql, useMutation } from '@apollo/client';
-import { useState } from 'react';
-import { useUser } from '../contexts/UserContext';
+import { gql, useMutation } from "@apollo/client";
+import { useState } from "react";
+import { useUser } from "../contexts/UserContext";
 
 const SEND_MESSAGE = gql`
   mutation SendMessage($input: SendMessageInput!) {
@@ -24,8 +24,8 @@ export default function NewThreadDialog({
   onClose,
   onThreadCreated,
 }: NewThreadDialogProps) {
-  const [username, setUsername] = useState('');
-  const [message, setMessage] = useState('');
+  const [username, setUsername] = useState("");
+  const [message, setMessage] = useState("");
   const { userId } = useUser();
   const [sendMessage] = useMutation(SEND_MESSAGE);
 
@@ -47,10 +47,10 @@ export default function NewThreadDialog({
       });
 
       onThreadCreated(result.data.sendMessage.threadId);
-      setUsername('');
-      setMessage('');
+      setUsername("");
+      setMessage("");
     } catch (error) {
-      console.error('Failed to create thread:', error);
+      console.error("Failed to create thread:", error);
     }
   };
 
@@ -98,4 +98,4 @@ export default function NewThreadDialog({
       </div>
     </div>
   );
-} 
+}

@@ -1,6 +1,6 @@
-import { authTypeDefs } from './auth.types';
-import { messageTypeDefs } from './message.types';
-import { threadTypeDefs } from './thread.types';
+import { authTypeDefs } from "./auth.types";
+import { messageTypeDefs } from "./message.types";
+import { threadTypeDefs } from "./thread.types";
 
 export const baseTypeDefs = `#graphql
   type User {
@@ -26,4 +26,4 @@ export const typeDefs = `#graphql
   ${authTypeDefs}
   ${messageTypeDefs}
   ${threadTypeDefs}
-`; 
+`;

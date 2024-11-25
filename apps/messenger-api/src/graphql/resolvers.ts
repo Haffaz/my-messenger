@@ -8,26 +8,30 @@ export const pubsub = new PubSub();
 
 const baseResolvers = {
   Query: {
-    hello: (): string => 'Hello, world!',
+    hello: (): string => "Hello, world!",
   },
   Subscription: {
     messageCreated: {
-      subscribe: (parent: any, { threadId }: { threadId: string }, context: Context) => {
+      subscribe: (
+        parent: any,
+        { threadId }: { threadId: string },
+        context: Context,
+      ) => {
         if (!context.user) {
-          throw new Error('Not authenticated');
+          throw new Error("Not authenticated");
         }
 
         console.log(`MESSAGE_CREATED.${threadId}`);
-        
+
         return pubsub.asyncIterableIterator([`MESSAGE_CREATED.${threadId}`]);
       },
     },
   },
 };
 
-export const resolvers = [  
+export const resolvers = [
   baseResolvers,
   authResolvers,
   messageResolvers,
   threadResolvers,
-]; 
+];
