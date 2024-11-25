@@ -8,6 +8,7 @@ import http from "http";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 
+import { PubSub } from "graphql-subscriptions";
 import resolvers from "./graphql/resolvers";
 import { createHttpContext } from "./middleware/auth";
 import { createApolloServer } from "./server/apollo";
@@ -19,6 +20,7 @@ const CORS_ORIGINS = ["http://localhost:5173"];
 const app = express();
 const httpServer = http.createServer(app);
 const prisma = new PrismaClient();
+const pubsub = new PubSub();
 
 const typeDefs = loadFilesSync(
   path.join(
@@ -29,7 +31,12 @@ const typeDefs = loadFilesSync(
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 async function initializeServer() {
-  const wsServerCleanup = setupWebSocketServer(httpServer, schema, prisma);
+  const wsServerCleanup = setupWebSocketServer(
+    httpServer,
+    schema,
+    prisma,
+    pubsub,
+  );
   const apolloServer = createApolloServer(httpServer, schema, wsServerCleanup);
   await apolloServer.start();
 
@@ -38,7 +45,7 @@ async function initializeServer() {
     cors<cors.CorsRequest>({ origin: CORS_ORIGINS }),
     express.json({ limit: "50mb" }),
     expressMiddleware(apolloServer, {
-      context: async ({ req }) => createHttpContext(req, prisma),
+      context: async ({ req }) => createHttpContext(req, prisma, pubsub),
     }),
   );
 

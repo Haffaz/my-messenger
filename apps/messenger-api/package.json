@@ -8,7 +8,8 @@
     "seed": "tsx prisma/seed.ts"
   },
   "scripts": {
-    "build": "npx prisma generate && tsc",
+    "codegen": "graphql-codegen",
+    "build": "graphql-codegen && npx prisma generate && tsc",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'tsx src/index.ts'",
     "start": "tsc && node dist/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -32,6 +33,9 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.5.3",
+    "@graphql-codegen/cli": "^5.0.3",
+    "@graphql-codegen/typescript": "^4.1.2",
+    "@graphql-codegen/typescript-resolvers": "^4.4.1",
     "@graphql-tools/schema": "^10.0.9",
     "@types/bcrypt": "^5.0.2",
     "@types/cors": "^2.8.17",

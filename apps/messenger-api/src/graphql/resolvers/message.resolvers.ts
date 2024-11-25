@@ -1,30 +1,24 @@
-import { SendMessageInput, sendMessageInputSchema } from "@repo/shared-types";
+import { sendMessageInputSchema } from "@repo/shared-types";
 import { GraphQLError } from "graphql";
-import { Context } from "../../types/context";
-import { pubsub } from "../../utils/pubsub";
+import { convertDateToString } from "../../utils/date";
+import { MyResolvers } from "./derived-types";
 
-export const messageResolvers = {
+export const messageResolvers: MyResolvers = {
   Query: {
-    messages: async (
-      _: any,
-      { threadId }: { threadId: string },
-      { prisma }: Context,
-    ) => {
-      return prisma.message.findMany({
-        where: { threadId },
-        orderBy: { createdAt: "asc" },
-        include: {
-          sender: true,
-        },
-      });
+    messages: async (_parent, { threadId }, { prisma }) => {
+      return prisma.message
+        .findMany({
+          where: { threadId },
+          orderBy: { createdAt: "asc" },
+          include: {
+            sender: true,
+          },
+        })
+        .then((messages) => messages.map(convertDateToString));
     },
   },
   Mutation: {
-    sendMessage: async (
-      _parent: unknown,
-      { input }: { input: SendMessageInput },
-      { prisma, user }: Context,
-    ) => {
+    sendMessage: async (_parent, { input }, { prisma, user, pubsub }) => {
       try {
         const validatedInput = sendMessageInputSchema.parse(input);
         return prisma.$transaction(async (tx) => {
@@ -54,16 +48,18 @@ export const messageResolvers = {
             });
           }
 
-          const message = await tx.message.create({
-            data: {
-              content: validatedInput.content,
-              threadId: thread.id,
-              senderId: user.id,
-            },
-            include: {
-              sender: true,
-            },
-          });
+          const message = await tx.message
+            .create({
+              data: {
+                content: validatedInput.content,
+                threadId: thread.id,
+                senderId: user.id,
+              },
+              include: {
+                sender: true,
+              },
+            })
+            .then(convertDateToString);
 
           await pubsub.publish(`MESSAGE_CREATED.${thread.id}`, {
             messageCreated: message,
@@ -77,6 +73,13 @@ export const messageResolvers = {
           extensions: { code: "BAD_REQUEST" },
         });
       }
+    },
+  },
+  Subscription: {
+    messageCreated: {
+      subscribe: (_, { threadId }, { pubsub }) => {
+        return pubsub.asyncIterableIterator([`MESSAGE_CREATED.${threadId}`]);
+      },
     },
   },
 };

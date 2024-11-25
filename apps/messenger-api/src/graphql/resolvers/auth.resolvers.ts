@@ -1,17 +1,13 @@
-import { LoginInput, loginSchema } from "@repo/shared-types";
+import { loginSchema } from "@repo/shared-types";
 import { GraphQLError } from "graphql";
 import { z } from "zod";
-import { Context } from "../../types/context";
 import { generateAuthToken } from "../../utils/auth";
 import { comparePasswords } from "../../utils/password";
+import { MyResolvers } from "./derived-types";
 
-export const authResolvers = {
+export const authResolvers: MyResolvers = {
   Mutation: {
-    login: async (
-      _parent: unknown,
-      { input }: { input: LoginInput },
-      context: Context,
-    ) => {
+    login: async (_, { input }, context) => {
       try {
         // Validate input using Zod
         const validatedInput = loginSchema.parse(input);

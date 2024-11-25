@@ -1,52 +1,68 @@
-import { CreateThreadInput } from "@repo/shared-types";
-import { Context } from "../../types/context";
+import { convertDateToString } from "../../utils/date";
+import { MyResolvers } from "./derived-types";
 
-export const threadResolvers = {
+export const threadResolvers: MyResolvers = {
   Query: {
-    threads: async (
-      _parent: unknown,
-      _args: unknown,
-      { prisma, user }: Context,
-    ) => {
-      return prisma.thread.findMany({
-        where: {
-          participants: {
-            some: {
-              id: user.id,
+    threads: async (_parent, _args, { prisma, user }) => {
+      return prisma.thread
+        .findMany({
+          where: {
+            participants: {
+              some: {
+                id: user.id,
+              },
             },
           },
-        },
-        include: {
-          participants: true,
-          messages: {
-            orderBy: {
-              createdAt: "desc",
+          include: {
+            participants: true,
+            messages: {
+              orderBy: {
+                createdAt: "desc",
+              },
+              take: 1,
+              include: {
+                sender: true,
+              },
             },
           },
-        },
-      });
+        })
+        .then((threads) =>
+          threads.map((thread) => ({
+            ...thread,
+            lastMessage: thread.messages[0]
+              ? convertDateToString(thread.messages[0])
+              : null,
+          })),
+        );
     },
   },
   Mutation: {
-    createThread: async (
-      _parent: unknown,
-      { input }: { input: CreateThreadInput },
-      { prisma, user }: Context,
-    ) => {
-      return prisma.thread.create({
-        data: {
-          participants: { connect: input.participants.map((id) => ({ id })) },
-          createdById: user.id,
-        },
-      });
-    },
-  },
-  Thread: {
-    lastMessage: async (parent: any, _: any, { prisma }: Context) => {
-      return prisma.message.findFirst({
-        where: { threadId: parent.id },
-        orderBy: { createdAt: "desc" },
-      });
+    createThread: async (_parent, { participants }, { prisma, user }) => {
+      return prisma.thread
+        .create({
+          data: {
+            participants: { connect: participants.map((id) => ({ id })) },
+            createdById: user.id,
+          },
+          include: {
+            participants: true,
+            messages: {
+              orderBy: {
+                createdAt: "desc",
+              },
+              take: 1,
+              include: {
+                sender: true,
+              },
+            },
+          },
+        })
+        .then((thread) => ({
+          ...thread,
+          lastMessage: thread.messages[0]
+            ? convertDateToString(thread.messages[0])
+            : null,
+        }));
     },
   },
 };
