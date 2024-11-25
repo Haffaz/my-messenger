@@ -9,6 +9,10 @@ const GET_THREADS = gql`
         id
         username
       }
+      lastMessage {
+        content
+        createdAt
+      }
     }
   }
 `;
@@ -41,6 +45,13 @@ export default function ThreadList({ selectedThreadId, onThreadSelect }: ThreadL
             }`}
           >
             <div className="font-medium">{otherParticipant?.username}</div>
+            {thread.lastMessage && (
+              <>
+                <div className="text-sm text-gray-500 truncate">
+                  {thread.lastMessage.content}
+                </div>
+              </>
+            )}
           </div>
         );
       })}
