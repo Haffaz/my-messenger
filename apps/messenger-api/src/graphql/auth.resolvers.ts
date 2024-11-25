@@ -1,6 +1,6 @@
+import { LoginInput, loginSchema } from '@repo/shared-types';
 import { GraphQLError } from 'graphql';
 import { z } from 'zod';
-import { LoginInput, loginSchema } from '../schemas/auth.schema';
 import { Context } from '../types/context';
 import { generateAuthToken } from '../utils/auth';
 import { comparePasswords } from '../utils/password';
