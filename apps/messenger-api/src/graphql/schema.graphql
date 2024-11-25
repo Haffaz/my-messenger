@@ -1,0 +1,52 @@
+type User {
+  id: ID!
+  username: String!
+}
+
+type AuthPayload {
+  token: String!
+  user: User!
+}
+
+type Message {
+  id: ID!
+  content: String!
+  createdAt: String!
+  sender: User!
+  threadId: ID!
+}
+
+type Thread {
+  id: ID!
+  participants: [User!]!
+  createdById: ID!
+  lastMessage: Message!
+}
+
+input LoginInput {
+  username: String!
+  password: String!
+}
+
+input SendMessageInput {
+  content: String!  
+  receiverUsername: String
+  threadId: ID
+}
+
+type Query {
+  hello: String!
+  threads: [Thread!]!
+  thread(id: ID!): Thread
+  messages(threadId: ID!): [Message!]!
+}
+
+type Mutation {
+  login(input: LoginInput!): AuthPayload!
+  sendMessage(input: SendMessageInput!): Message!
+  createThread(participants: [ID!]!): Thread!
+}
+
+type Subscription {
+  messageCreated(threadId: ID!): Message!
+} 

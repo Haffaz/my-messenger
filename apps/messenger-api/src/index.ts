@@ -5,23 +5,32 @@ import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import cors from "cors";
 
+import { loadFilesSync } from "@graphql-tools/load-files";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { PrismaClient } from "@prisma/client";
 import { GraphQLError } from "graphql";
 import { useServer } from "graphql-ws/lib/use/ws";
 import http from "http";
+import path, { dirname } from "path";
+import { fileURLToPath } from "url";
 import { WebSocketServer } from "ws";
 import resolvers from "./graphql/resolvers";
-import typeDefs from "./graphql/schemas";
 import { Context } from "./types/context";
 import { getUser } from "./utils/auth";
-
 const app = express();
 
 const prisma = new PrismaClient();
 
 const httpServer = http.createServer(app);
 
+const typeDefs = loadFilesSync(
+  path.join(
+    dirname(fileURLToPath(import.meta.url)),
+    "./graphql/schema.graphql",
+  ),
+);
+
+// Create the executable schema
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
 const wsServer = new WebSocketServer({
@@ -99,7 +108,7 @@ app.use(
 await new Promise<void>((resolve) =>
   httpServer.listen({ port: 4000 }, resolve),
 );
-console.log(`🚀 Server ready at http://localhost:4000/`);
+console.log("🚀 Server ready at http://localhost:4000/");
 
 // Graceful shutdown
 process.on("SIGTERM", async () => {
