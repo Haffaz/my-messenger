@@ -1,5 +1,5 @@
 import { CreateThreadInput } from "@repo/shared-types";
-import { Context } from "../types/context";
+import { Context } from "../../types/context";
 
 export const threadResolvers = {
   Query: {

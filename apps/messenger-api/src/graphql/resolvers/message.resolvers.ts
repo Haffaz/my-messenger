@@ -1,7 +1,7 @@
 import { SendMessageInput, sendMessageInputSchema } from "@repo/shared-types";
 import { GraphQLError } from "graphql";
-import { Context } from "../types/context";
-import { pubsub } from "./resolvers";
+import { Context } from "../../types/context";
+import { pubsub } from "../../utils/pubsub";
 
 export const messageResolvers = {
   Query: {

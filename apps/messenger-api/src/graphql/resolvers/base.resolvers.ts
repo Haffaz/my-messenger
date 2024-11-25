@@ -1,12 +1,7 @@
-import { PubSub } from "graphql-subscriptions";
-import { Context } from "../types/context";
-import { authResolvers } from "./auth.resolvers";
-import { messageResolvers } from "./message.resolvers";
-import { threadResolvers } from "./thread.resolvers";
+import { Context } from "../../types/context";
+import { pubsub } from "../../utils/pubsub";
 
-export const pubsub = new PubSub();
-
-const baseResolvers = {
+export const baseResolvers = {
   Query: {
     hello: (): string => "Hello, world!",
   },
@@ -28,10 +23,3 @@ const baseResolvers = {
     },
   },
 };
-
-export const resolvers = [
-  baseResolvers,
-  authResolvers,
-  messageResolvers,
-  threadResolvers,
-];

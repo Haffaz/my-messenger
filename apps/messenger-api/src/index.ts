@@ -11,8 +11,8 @@ import { GraphQLError } from "graphql";
 import { useServer } from "graphql-ws/lib/use/ws";
 import http from "http";
 import { WebSocketServer } from "ws";
-import { resolvers } from "./graphql/resolvers";
-import { typeDefs } from "./graphql/types";
+import resolvers from "./graphql/resolvers";
+import typeDefs from "./graphql/schemas";
 import { Context } from "./types/context";
 import { getUser } from "./utils/auth";
 
