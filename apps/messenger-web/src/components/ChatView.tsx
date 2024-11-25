@@ -1,6 +1,21 @@
-import { gql, useMutation, useQuery } from '@apollo/client';
+import { gql, useMutation, useQuery, useSubscription } from '@apollo/client';
 import { useState } from 'react';
 import { useUser } from '../contexts/UserContext';
+
+const MESSAGE_SUBSCRIPTION = gql`
+  subscription OnMessageSent($threadId: ID!) {
+    messageCreated(threadId: $threadId) {
+      content
+      id
+      createdAt
+      threadId
+      sender {
+        id
+        username
+      }
+    }
+  }
+`;
 
 const GET_MESSAGES = gql`
   query GetMessages($threadId: ID!) {
@@ -31,10 +46,29 @@ interface ChatViewProps {
 }
 
 export default function ChatView({ threadId }: ChatViewProps) {
-  const [message, setMessage] = useState('');
-  const { data, loading } = useQuery(GET_MESSAGES, {
+  const [messages, setMessages] = useState([]);
+  
+  // Query initial messages
+  const { loading } = useQuery(GET_MESSAGES, {
     variables: { threadId },
+    onCompleted: (data) => {
+      setMessages(data.messages);
+    }
   });
+
+  // Subscribe to new messages
+  useSubscription(MESSAGE_SUBSCRIPTION, {
+    variables: { threadId },
+    onData: ({ data }) => {
+      console.log('new message', data.data.messageCreated);
+      if (data?.data?.messageCreated) {
+        setMessages((prevMessages) => [...prevMessages, data.data.messageCreated]);
+      }
+    },
+  });
+  
+  const [message, setMessage] = useState('');
+
   const { userId } = useUser();
 
   const [sendMessage] = useMutation(SEND_MESSAGE, {
@@ -60,15 +94,16 @@ export default function ChatView({ threadId }: ChatViewProps) {
     }
   };
 
+
   if (loading) return <div>Loading...</div>;
 
-  console.log("messages", data.messages);
-  console.log("userId", userId);
+
+
   return (
     <div className="h-full flex flex-col">
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {data?.messages.map((msg: any) => (
+        {messages.map((msg: any) => (
           <div
             key={msg.id}
             className={`flex ${

@@ -1,6 +1,7 @@
 import { GraphQLError } from "graphql";
 import { SendMessageInput, sendMessageInputSchema } from "../schemas/message.schema";
 import { Context } from "../types/context";
+import { pubsub } from "./resolvers";
 
 export const messageResolvers = {
     Query: {
@@ -45,14 +46,23 @@ export const messageResolvers = {
                             }
                         });
                     }
-
-                    return tx.message.create({ 
+                    
+                    const message = await tx.message.create({ 
                         data: { 
                             content: validatedInput.content, 
                             threadId: thread.id,
                             senderId: user.id
                         },
+                        include: {
+                            sender: true
+                        }
                     }); 
+
+                    await pubsub.publish(`MESSAGE_CREATED.${thread.id}`, {
+                        messageCreated: message
+                      });
+                    
+                    return message;
                 })                
             } catch (error) {
                 console.log(error);
