@@ -1,5 +1,5 @@
+import { SendMessageInput, sendMessageInputSchema } from "@repo/shared-types";
 import { GraphQLError } from "graphql";
-import { SendMessageInput, sendMessageInputSchema } from "../schemas/message.schema";
 import { Context } from "../types/context";
 import { pubsub } from "./resolvers";
 

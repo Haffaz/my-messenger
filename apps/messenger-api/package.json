@@ -19,6 +19,7 @@
   "dependencies": {
     "@apollo/server": "^4.11.2",
     "@prisma/client": "^5.22.0",
+    "@repo/shared-types": "workspace:*",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "express": "^4.21.1",

@@ -1,0 +1,16 @@
+{
+  "name": "@repo/shared-types",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "tsc --watch",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "exports": {
+    ".": "./index.ts"
+  }
+}

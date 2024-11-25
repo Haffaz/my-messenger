@@ -29,6 +29,9 @@ importers:
       '@prisma/client':
         specifier: ^5.22.0
         version: 5.22.0(prisma@5.22.0)
+      '@repo/shared-types':
+        specifier: workspace:*
+        version: link:../../packages/shared-types
       bcrypt:
         specifier: ^5.1.1
         version: 5.1.1
@@ -184,6 +187,12 @@ importers:
       typescript:
         specifier: 5.5.4
         version: 5.5.4
+
+  packages/shared-types:
+    dependencies:
+      zod:
+        specifier: ^3.23.8
+        version: 3.23.8
 
   packages/typescript-config: {}
 
