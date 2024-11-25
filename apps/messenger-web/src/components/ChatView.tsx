@@ -97,8 +97,6 @@ export default function ChatView({ threadId }: ChatViewProps) {
 
   if (loading) return <div>Loading...</div>;
 
-
-
   return (
     <div className="h-full flex flex-col">
       {/* Messages */}
