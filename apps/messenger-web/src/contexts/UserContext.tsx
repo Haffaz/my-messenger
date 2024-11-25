@@ -1,14 +1,9 @@
 import { ReactNode, createContext, useContext, useEffect, useState } from "react";
 
-// TODO: Move this to shared-types
-export type User = {
-  id: string;
-  username: string;
-};
 
 interface UserContextType {
-  user: User | null;
-  setUser: (user: User | null) => void;
+  userId: string | null;
+  setUserId: (userId: string | null) => void;
   token: string | null;
   setToken: (token: string | null) => void;
 }
@@ -16,18 +11,20 @@ interface UserContextType {
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
   const [token, setToken] = useState<string | null>(null);
 
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
+    const savedUserId = localStorage.getItem("userId");
     if (savedToken) {
       setToken(savedToken);
+      setUserId(savedUserId);
     }
   }, [setToken]);
 
   return (
-    <UserContext.Provider value={{ user, setUser, token, setToken }}>
+    <UserContext.Provider value={{ userId, setUserId, token, setToken }}>
       {children}
     </UserContext.Provider>
   );

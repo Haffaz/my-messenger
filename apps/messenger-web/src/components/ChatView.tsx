@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useUser } from '../contexts/UserContext';
 
 const GET_MESSAGES = gql`
-  query GetMessages($threadId: String!) {
+  query GetMessages($threadId: ID!) {
     messages(threadId: $threadId) {
       id
       content
@@ -32,10 +32,10 @@ interface ChatViewProps {
 
 export default function ChatView({ threadId }: ChatViewProps) {
   const [message, setMessage] = useState('');
-  const { user } = useUser();
   const { data, loading } = useQuery(GET_MESSAGES, {
     variables: { threadId },
   });
+  const { userId } = useUser();
 
   const [sendMessage] = useMutation(SEND_MESSAGE, {
     refetchQueries: [{ query: GET_MESSAGES, variables: { threadId } }],
@@ -43,7 +43,7 @@ export default function ChatView({ threadId }: ChatViewProps) {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim() || !user) return;
+    if (!message.trim()) return;
 
     try {
       await sendMessage({
@@ -51,7 +51,6 @@ export default function ChatView({ threadId }: ChatViewProps) {
           input: {
             content: message,
             threadId,
-            senderId: user.id,
           },
         },
       });
@@ -63,6 +62,8 @@ export default function ChatView({ threadId }: ChatViewProps) {
 
   if (loading) return <div>Loading...</div>;
 
+  console.log("messages", data.messages);
+  console.log("userId", userId);
   return (
     <div className="h-full flex flex-col">
       {/* Messages */}
@@ -71,12 +72,12 @@ export default function ChatView({ threadId }: ChatViewProps) {
           <div
             key={msg.id}
             className={`flex ${
-              msg.sender.id === user?.id ? 'justify-end' : 'justify-start'
+              msg.sender.id === userId ? 'justify-end' : 'justify-start'
             }`}
           >
             <div
               className={`max-w-[70%] rounded-lg px-4 py-2 ${
-                msg.sender.id === user?.id
+                msg.sender.id === userId
                   ? 'bg-blue-500 text-white'
                   : 'bg-gray-200'
               }`}

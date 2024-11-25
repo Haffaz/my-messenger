@@ -24,7 +24,7 @@ interface ThreadListProps {
 
 export default function ThreadList({ selectedThreadId, onThreadSelect }: ThreadListProps) {
   const { data, loading, error } = useQuery(GET_THREADS);
-  const { user } = useUser();
+  const { userId } = useUser();
 
   if (loading) return <div className="p-4">Loading...</div>;
   if (error) return <div className="p-4 text-red-500">Error loading threads</div>;
@@ -33,7 +33,7 @@ export default function ThreadList({ selectedThreadId, onThreadSelect }: ThreadL
     <div className="overflow-y-auto">
       {data?.threads.map((thread: any) => {
         const otherParticipant = thread.participants.find(
-          (p: any) => p.id !== user?.id
+          (p: any) => p.id !== userId
         );
 
         return (

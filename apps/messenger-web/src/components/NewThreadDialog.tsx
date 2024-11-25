@@ -26,21 +26,21 @@ export default function NewThreadDialog({
 }: NewThreadDialogProps) {
   const [username, setUsername] = useState('');
   const [message, setMessage] = useState('');
-  const { user } = useUser();
+  const { userId } = useUser();
   const [sendMessage] = useMutation(SEND_MESSAGE);
 
   if (!open) return null;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!username.trim() || !message.trim() || !user) return;
+    if (!username.trim() || !message.trim() || !userId) return;
 
     try {
       const result = await sendMessage({
         variables: {
           input: {
             content: message,
-            senderId: user.id,
+            senderId: userId,
             receiverUsername: username,
           },
         },

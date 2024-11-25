@@ -18,14 +18,15 @@ const LOGIN_MUTATION = gql`
 export default function Login() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const { setUser, setToken, token } = useUser();
+  const { setUserId, setToken, token } = useUser();
   const navigate = useNavigate();
 
   const [login, { loading, error }] = useMutation(LOGIN_MUTATION, {
     onCompleted: (data) => {
-      setUser(data.login.user);
+      setUserId(data.login.user.id);
       setToken(data.login.token);
       localStorage.setItem("token", data.login.token);
+      localStorage.setItem("userId", data.login.user.id);
       navigate("/messages");
     },
   });
