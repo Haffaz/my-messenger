@@ -5,9 +5,12 @@ import { expressMiddleware } from '@apollo/server/express4';
 import { ApolloServerPluginDrainHttpServer } from '@apollo/server/plugin/drainHttpServer';
 import cors from 'cors';
 
+import { makeExecutableSchema } from '@graphql-tools/schema';
 import { PrismaClient } from '@prisma/client';
 import { GraphQLError } from 'graphql';
+import { useServer } from 'graphql-ws/lib/use/ws';
 import http from 'http';
+import { WebSocketServer } from 'ws';
 import { resolvers } from './graphql/resolvers';
 import { typeDefs } from './graphql/types';
 import { Context } from './types/context';
@@ -19,19 +22,38 @@ const prisma = new PrismaClient();
 
 const httpServer = http.createServer(app);
 
-const server = new ApolloServer<Context>({
-  typeDefs,
-  resolvers,
-  plugins: [ApolloServerPluginDrainHttpServer({ httpServer })],
+const schema = makeExecutableSchema({ typeDefs, resolvers });
+
+const wsServer = new WebSocketServer({
+  server: httpServer,
+  path: '/graphql',
 });
 
-await server.start();
+const wsServerCleanup = useServer({ schema }, wsServer);
+
+const apolloServer = new ApolloServer<Context>({
+  schema,
+  plugins: [
+    ApolloServerPluginDrainHttpServer({ httpServer }),
+    {
+      async serverWillStart() {
+        return {
+          async drainServer() {
+            await wsServerCleanup.dispose();
+          },
+        };
+      },
+    },
+  ],
+});
+
+await apolloServer.start();
 
 app.use(
   '/',
   cors<cors.CorsRequest>({ origin: ['http://localhost:5173'] }),
   express.json({ limit: '50mb' }),
-  expressMiddleware(server, {
+  expressMiddleware(apolloServer, {
     context: async ({ req }): Promise<Context> => {   
       
       if (req.body?.operationName === 'Login') {
