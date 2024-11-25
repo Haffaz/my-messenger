@@ -24,8 +24,13 @@ export const threadResolvers = {
         }
     },
     Mutation: {
-        createThread: async (_parent: unknown, { input }: { input: CreateThreadInput }, { prisma }: Context) => {
-            return prisma.thread.create({ data: { participants: { connect: input.participants.map((id) => ({ id })) }, createdById: input.createdById  } });
+        createThread: async (_parent: unknown, { input }: { input: CreateThreadInput }, { prisma, user }: Context) => {
+            return prisma.thread.create({ 
+                data: { 
+                    participants: { connect: input.participants.map((id) => ({ id })) }, 
+                    createdById: user.id 
+                } 
+            });
         }
     },
     Thread: {

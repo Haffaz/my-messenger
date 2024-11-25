@@ -12,6 +12,6 @@ export const threadTypeDefs = `#graphql
   }
 
   extend type Mutation {
-    createThread(participants: [ID!]!, createdById: ID!): Thread!
+    createThread(participants: [ID!]!): Thread!
   }
 `;

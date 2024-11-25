@@ -15,7 +15,7 @@ export const messageResolvers = {
         },
     },
     Mutation: {
-        sendMessage: async (_parent: unknown, { input }: { input: SendMessageInput }, { prisma }: Context) => {
+        sendMessage: async (_parent: unknown, { input }: { input: SendMessageInput }, { prisma, user }: Context) => {
             try {
                 const validatedInput = sendMessageInputSchema.parse(input);
                 return prisma.$transaction(async(tx) => {
@@ -35,10 +35,10 @@ export const messageResolvers = {
 
                         thread = await tx.thread.create({
                             data: {
-                                createdById: validatedInput.senderId,
+                                createdById: user.id,
                                 participants: {
                                     connect: [
-                                        { id: validatedInput.senderId },
+                                        { id: user.id },
                                         { id: receiver.id }
                                     ]
                                 }
@@ -50,7 +50,7 @@ export const messageResolvers = {
                         data: { 
                             content: validatedInput.content, 
                             threadId: thread.id,
-                            senderId: validatedInput.senderId
+                            senderId: user.id
                         },
                     }); 
                 })                
