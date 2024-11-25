@@ -10,12 +10,6 @@ export const messageResolvers = {
                 orderBy: { createdAt: 'asc' }
             });
         },
-        lastMessage: async (_: any, { threadId }: { threadId: string }, { prisma }: Context) => {
-            return prisma.message.findFirst({
-                where: { threadId },
-                orderBy: { createdAt: 'desc' }
-            });
-        }
     },
     Mutation: {
         sendMessage: async (_parent: unknown, { input }: { input: SendMessageInput }, { prisma }: Context) => {

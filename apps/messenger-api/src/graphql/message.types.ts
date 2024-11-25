@@ -2,13 +2,13 @@ export const messageTypeDefs = `#graphql
   type Message {
     id: ID!
     content: String!
+    createdAt: String!
     senderId: ID!
     threadId: ID!
   }
 
   extend type Query {
     messages(threadId: ID!): [Message!]!
-    lastMessage(threadId: ID!): Message!
   }
 
   input SendMessageInput {
