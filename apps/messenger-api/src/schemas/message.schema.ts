@@ -5,9 +5,9 @@ export const sendMessageInputSchema = z.object({
     .string()
     .min(1, 'Message content cannot be empty')
     .max(2000, 'Message content cannot exceed 2000 characters'),
-  threadId: z.string().optional(),
   senderId: z.string(),
-  receiverUsername: z.string(),
+  threadId: z.string().optional(),
+  receiverUsername: z.string().optional(),
 });
 
 export const getMessagesSchema = z.object({

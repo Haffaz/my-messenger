@@ -3,7 +3,7 @@ export const messageTypeDefs = `#graphql
     id: ID!
     content: String!
     createdAt: String!
-    senderId: ID!
+    sender: User!
     threadId: ID!
   }
 

@@ -1,5 +1,5 @@
 import { GraphQLError } from "graphql";
-import { SendMessageInput, sendMessageInputSchema } from "../schemas/messege.schema";
+import { SendMessageInput, sendMessageInputSchema } from "../schemas/message.schema";
 import { Context } from "../types/context";
 
 export const messageResolvers = {
@@ -7,7 +7,10 @@ export const messageResolvers = {
         messages: async (_: any, { threadId }: { threadId: string }, { prisma }: Context) => {
             return prisma.message.findMany({
                 where: { threadId },
-                orderBy: { createdAt: 'asc' }
+                orderBy: { createdAt: 'asc' },
+                include: {
+                    sender: true
+                }
             });
         },
     },
@@ -20,16 +23,16 @@ export const messageResolvers = {
                         where: { id: validatedInput.threadId } 
                     });
 
-                    const receiver = await tx.user.findUnique({
-                        where: { username: validatedInput.receiverUsername }
-                    });
-
-                    if (!receiver) {
-                        throw new GraphQLError('Receiver not found', { extensions: { code: 'BAD_REQUEST' } });
-                    }
-
                     // If thread doesn't exist, create a new one
                     if (!thread) {
+                        const receiver = await tx.user.findUnique({
+                            where: { username: validatedInput.receiverUsername }
+                        });
+
+                        if (!receiver) {
+                            throw new GraphQLError('Receiver not found', { extensions: { code: 'BAD_REQUEST' } });
+                        }
+
                         thread = await tx.thread.create({
                             data: {
                                 createdById: validatedInput.senderId,
