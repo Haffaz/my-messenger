@@ -1,27 +1,24 @@
-import express from "express";
-
-import { ApolloServer } from "@apollo/server";
 import { expressMiddleware } from "@apollo/server/express4";
-import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
-import cors from "cors";
-
 import { loadFilesSync } from "@graphql-tools/load-files";
 import { makeExecutableSchema } from "@graphql-tools/schema";
 import { PrismaClient } from "@prisma/client";
-import { GraphQLError } from "graphql";
-import { useServer } from "graphql-ws/lib/use/ws";
+import cors from "cors";
+import express from "express";
 import http from "http";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
-import { WebSocketServer } from "ws";
+
 import resolvers from "./graphql/resolvers";
-import { Context } from "./types/context";
-import { getUser } from "./utils/auth";
+import { createHttpContext } from "./middleware/auth";
+import { createApolloServer } from "./server/apollo";
+import { setupWebSocketServer } from "./server/websocket";
+
+const PORT = 4000;
+const CORS_ORIGINS = ["http://localhost:5173"];
+
 const app = express();
-
-const prisma = new PrismaClient();
-
 const httpServer = http.createServer(app);
+const prisma = new PrismaClient();
 
 const typeDefs = loadFilesSync(
   path.join(
@@ -29,90 +26,44 @@ const typeDefs = loadFilesSync(
     "./graphql/schema.graphql",
   ),
 );
-
-// Create the executable schema
 const schema = makeExecutableSchema({ typeDefs, resolvers });
 
-const wsServer = new WebSocketServer({
-  server: httpServer,
-  path: "/graphql",
-});
+async function initializeServer() {
+  const wsServerCleanup = setupWebSocketServer(httpServer, schema, prisma);
+  const apolloServer = createApolloServer(httpServer, schema, wsServerCleanup);
+  await apolloServer.start();
 
-const wsServerCleanup = useServer(
-  {
-    schema,
-    context: async (ctx, _msg, _arg): Promise<Context> => {
-      const token = ctx.connectionParams?.authorization as string;
-      const user = await getUser(token, prisma);
+  app.use(
+    "/",
+    cors<cors.CorsRequest>({ origin: CORS_ORIGINS }),
+    express.json({ limit: "50mb" }),
+    expressMiddleware(apolloServer, {
+      context: async ({ req }) => createHttpContext(req, prisma),
+    }),
+  );
 
-      if (!user) {
-        throw new GraphQLError("User is not authenticated", {
-          extensions: {
-            code: "UNAUTHENTICATED",
-            http: { status: 401 },
-          },
-        });
-      }
+  await new Promise<void>((resolve) =>
+    httpServer.listen({ port: PORT }, resolve),
+  );
+  console.log(`🚀 Server ready at http://localhost:${PORT}/`);
+}
 
-      return { prisma, user };
-    },
-  },
-  wsServer,
-);
+function setupGracefulShutdown() {
+  process.on("SIGTERM", async () => {
+    console.log("SIGTERM received. Closing HTTP server and Prisma client...");
+    await prisma.$disconnect();
+    process.exit(0);
+  });
+}
 
-const apolloServer = new ApolloServer<Context>({
-  schema,
-  plugins: [
-    ApolloServerPluginDrainHttpServer({ httpServer }),
-    {
-      async serverWillStart() {
-        return {
-          async drainServer() {
-            await wsServerCleanup.dispose();
-          },
-        };
-      },
-    },
-  ],
-});
+async function bootstrap() {
+  try {
+    await initializeServer();
+    setupGracefulShutdown();
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+}
 
-await apolloServer.start();
-
-app.use(
-  "/",
-  cors<cors.CorsRequest>({ origin: ["http://localhost:5173"] }),
-  express.json({ limit: "50mb" }),
-  expressMiddleware(apolloServer, {
-    context: async ({ req }): Promise<Context> => {
-      if (req.body?.operationName === "Login") {
-        return { prisma, user: null };
-      }
-
-      const token = req.headers.authorization || "";
-      const user = await getUser(token, prisma);
-
-      if (!user) {
-        throw new GraphQLError("User is not authenticated", {
-          extensions: {
-            code: "UNAUTHENTICATED",
-            http: { status: 401 },
-          },
-        });
-      }
-
-      return { prisma, user };
-    },
-  }),
-);
-
-await new Promise<void>((resolve) =>
-  httpServer.listen({ port: 4000 }, resolve),
-);
-console.log("🚀 Server ready at http://localhost:4000/");
-
-// Graceful shutdown
-process.on("SIGTERM", async () => {
-  console.log("SIGTERM received. Closing HTTP server and Prisma client...");
-  await prisma.$disconnect();
-  process.exit(0);
-});
+bootstrap();
