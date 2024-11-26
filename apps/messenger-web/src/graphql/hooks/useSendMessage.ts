@@ -1,4 +1,4 @@
-import { useMutation } from "@apollo/client";
+import { InternalRefetchQueryDescriptor, useMutation } from "@apollo/client";
 import { graphql } from "../../graphql/generated";
 
 const SEND_MESSAGE = graphql(`
@@ -15,7 +15,12 @@ const SEND_MESSAGE = graphql(`
     }
   }
 `);
+type UseSendMessageOptions = {
+  refetchQueries?: InternalRefetchQueryDescriptor[];
+} | null;
 
-export default function useSendMessage() {
-  return useMutation(SEND_MESSAGE);
+export default function useSendMessage(options: UseSendMessageOptions = {}) {
+  return useMutation(SEND_MESSAGE, {
+    refetchQueries: options?.refetchQueries ?? [],
+  });
 }

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useUser } from "../contexts/UserContext";
+import { GET_THREADS } from "../graphql/getThreads";
 import useSendMessage from "../graphql/hooks/useSendMessage";
 
 interface NewThreadDialogProps {
@@ -16,7 +17,9 @@ export default function NewThreadDialog({
   const [username, setUsername] = useState("");
   const [message, setMessage] = useState("");
   const { userId } = useUser();
-  const [sendMessage] = useSendMessage();
+  const [sendMessage] = useSendMessage({
+    refetchQueries: [{ query: GET_THREADS }],
+  });
 
   if (!open) return null;
 
@@ -34,7 +37,13 @@ export default function NewThreadDialog({
         },
       });
 
-      onThreadCreated(result.data?.sendMessage.threadId ?? "");
+      const data = result.data;
+      if (!data) {
+        console.error("Failed to create thread");
+        return;
+      }
+
+      onThreadCreated(data.sendMessage.threadId);
       setUsername("");
       setMessage("");
     } catch (error) {
