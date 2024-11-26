@@ -1,5 +1,5 @@
 import { useMutation } from "@apollo/client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
 import { graphql } from "../graphql/generated";
@@ -31,12 +31,6 @@ export default function Login() {
       navigate("/messages");
     },
   });
-
-  useEffect(() => {
-    if (token) {
-      navigate("/messages");
-    }
-  }, [token, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

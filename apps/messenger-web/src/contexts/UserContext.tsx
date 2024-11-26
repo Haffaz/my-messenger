@@ -36,8 +36,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
     if (savedToken && savedUserId) {
       setToken(savedToken);
       setUserId(savedUserId);
+      navigate("/messages");
     }
-  }, []);
+  }, [navigate]);
 
   return (
     <UserContext.Provider
@@ -60,6 +61,6 @@ export function useUser() {
       navigate("/login", { replace: true });
     }
   }, [context.token, context.userId, navigate]);
-  
+
   return context;
 }
