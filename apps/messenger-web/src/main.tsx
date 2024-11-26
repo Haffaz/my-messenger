@@ -17,15 +17,15 @@ const root = createRoot(rootElement);
 root.render(
   <StrictMode>
     <ApolloProvider client={apolloClient}>
-      <UserProvider>
-        <BrowserRouter>
+      <BrowserRouter>
+        <UserProvider>
           <Routes>
             <Route path="/" element={<Navigate to="/login" replace />} />
             <Route path="/login" element={<Login />} />
             <Route path="/messages" element={<Messages />} />
           </Routes>
-        </BrowserRouter>
-      </UserProvider>
+        </UserProvider>
+      </BrowserRouter>
     </ApolloProvider>
   </StrictMode>,
 );

@@ -12,6 +12,7 @@ type UserContextType = {
   setUserId: (userId: string) => void;
   token: string;
   setToken: (token: string) => void;
+  logout: () => void;
 };
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
@@ -19,6 +20,15 @@ const UserContext = createContext<UserContextType | undefined>(undefined);
 export function UserProvider({ children }: { children: ReactNode }) {
   const [userId, setUserId] = useState("");
   const [token, setToken] = useState("");
+  const navigate = useNavigate();
+
+  const logout = () => {
+    setToken("");
+    setUserId("");
+    localStorage.removeItem("token");
+    localStorage.removeItem("userId");
+    navigate("/login");
+  };
 
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
@@ -30,7 +40,9 @@ export function UserProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <UserContext.Provider value={{ userId, setUserId, token, setToken }}>
+    <UserContext.Provider
+      value={{ userId, setUserId, token, setToken, logout }}
+    >
       {children}
     </UserContext.Provider>
   );
@@ -44,7 +56,7 @@ export function useUser() {
   }
 
   if (!context.token || !context.userId) {
-    navigate("/login");
+    navigate("/login", { replace: true });
   }
 
   return context;
