@@ -1,6 +1,7 @@
 import { useQuery } from "@apollo/client";
 import { useUser } from "../contexts/UserContext";
 import { GET_THREADS } from "../graphql/getThreads";
+import ThreadListItem from "./thread/ThreadListItem";
 
 type ThreadListProps = {
   selectedThreadId: string | null;
@@ -14,42 +15,24 @@ export default function ThreadList({
   const { data, loading, error } = useQuery(GET_THREADS);
   const { userId } = useUser();
 
+  const threads = data?.threads || [];
+
   if (loading) return <div className="p-4">Loading...</div>;
-
-  if (error) {
-    console.error("Error loading threads:", error);
+  if (error)
     return <div className="p-4 text-red-500">Error loading threads</div>;
-  }
-
-  if (!data?.threads) {
-    return <div className="p-4">No threads found</div>;
-  }
+  if (threads.length === 0) return <div className="p-4">No threads found</div>;
 
   return (
     <div className="overflow-y-auto">
-      {data.threads.map((thread) => {
-        const otherParticipant = thread.participants.find(
-          (participant) => participant.id !== userId,
-        );
-        return (
-          <div
-            key={thread.id}
-            onClick={() => onThreadSelect(thread.id)}
-            className={`p-4 cursor-pointer hover:bg-gray-50 ${
-              selectedThreadId === thread.id ? "bg-gray-100" : ""
-            }`}
-          >
-            <div className="font-medium">{otherParticipant?.username}</div>
-            {thread.lastMessage && (
-              <>
-                <div className="text-sm text-gray-500 truncate">
-                  {thread.lastMessage.content}
-                </div>
-              </>
-            )}
-          </div>
-        );
-      })}
+      {threads.map((thread) => (
+        <ThreadListItem
+          key={thread.id}
+          thread={thread}
+          isSelected={selectedThreadId === thread.id}
+          currentUserId={userId}
+          onSelect={onThreadSelect}
+        />
+      ))}
     </div>
   );
 }
