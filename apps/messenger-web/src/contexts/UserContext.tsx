@@ -55,9 +55,11 @@ export function useUser() {
     throw new Error("useUser must be used within a UserProvider");
   }
 
-  if (!context.token || !context.userId) {
-    navigate("/login", { replace: true });
-  }
-
+  useEffect(() => {
+    if (!context.token || !context.userId) {
+      navigate("/login", { replace: true });
+    }
+  }, [context.token, context.userId, navigate]);
+  
   return context;
 }
