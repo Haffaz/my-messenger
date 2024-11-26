@@ -1,81 +1,109 @@
-# Turborepo starter
+# Turborepo Messenger
 
-This is an official starter Turborepo.
+A modern monorepo setup for a real-time messaging application built with React and GraphQL.
 
-## Using this example
+## Project Structure
 
-Run the following command:
+### Applications
+
+#### `messenger-web` (Frontend)
+- React application built with:
+  - Vite
+  - Apollo Client
+  - TailwindCSS
+  - Real-time WebSocket subscriptions
+  - TypeScript
+
+#### `messenger-api` (Backend)
+- GraphQL API server built with:
+  - Apollo Server
+  - Prisma (PostgreSQL)
+  - WebSocket subscriptions
+  - JWT authentication
+
+### Shared Packages
+- `@repo/shared-types`: Shared TypeScript types and Zod schemas for:
+  - Authentication
+  - Messages
+  - Threads
+
+## Quick Start
 
 ```sh
-npx create-turbo@latest
-```
+# Install dependencies
+pnpm install
 
-## What's inside?
+# Start development servers
+pnpm dev
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
+# Build all applications
 pnpm build
 ```
 
-### Develop
+## Features
 
-To develop all apps and packages, run the following command:
+### Frontend
+- Real-time chat interface
+- Thread-based conversations
+- User authentication
+- Responsive design
+- Type-safe GraphQL operations
 
+### Backend
+- GraphQL API with subscriptions
+- JWT-based authentication
+- PostgreSQL database with Prisma
+- Type-safe resolvers
+- Shared validation schemas
+
+## Tech Stack
+
+### Frontend
+- **Framework**: [React](https://react.dev)
+- **Build Tool**: [Vite](https://vitejs.dev)
+- **GraphQL Client**: [Apollo Client](https://www.apollographql.com/docs/react/)
+- **Styling**: [TailwindCSS](https://tailwindcss.com)
+
+### Backend
+- **API Framework**: [Apollo Server](https://www.apollographql.com/docs/apollo-server/)
+- **Database**: [PostgreSQL](https://www.postgresql.org/) with [Prisma](https://www.prisma.io/)
+- **Real-time**: GraphQL Subscriptions with WebSocket
+
+### Shared
+- **Build System**: [Turborepo](https://turbo.build/repo)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Package Manager**: [pnpm](https://pnpm.io/)
+- **Schema Validation**: [Zod](https://zod.dev/)
+- **Code Quality**: [ESLint](https://eslint.org/), [Prettier](https://prettier.io)
+
+## Development
+
+### Environment Setup
+
+1. Create a PostgreSQL database
+2. Copy `.env.example` to `.env` in the messenger-api directory
+3. Update the DATABASE_URL in `.env`
+4. Run database migrations:
+```sh
+cd apps/messenger-api
+pnpm prisma migrate dev
 ```
-cd my-turborepo
+
+### Running the Applications
+
+```sh
+# Start all applications in development mode
 pnpm dev
+
+# Start specific applications
+pnpm --filter messenger-web dev
+pnpm --filter messenger-api dev
 ```
 
-### Remote Caching
+## Documentation
 
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+- [Frontend Documentation](apps/messenger-web/README.md)
+- [Backend Documentation](apps/messenger-api/README.md)
+- [Turborepo Docs](https://turbo.build/repo/docs)
+- [Apollo Server Docs](https://www.apollographql.com/docs/apollo-server/)
+- [Prisma Docs](https://www.prisma.io/docs)
