@@ -1,17 +1,6 @@
-import { gql, useMutation } from "@apollo/client";
 import { useState } from "react";
 import { useUser } from "../contexts/UserContext";
-
-const SEND_MESSAGE = gql`
-  mutation SendMessage($input: SendMessageInput!) {
-    sendMessage(input: $input) {
-      id
-      content
-      threadId
-      senderId
-    }
-  }
-`;
+import useSendMessage from "../graphql/hooks/useSendMessage";
 
 interface NewThreadDialogProps {
   open: boolean;
@@ -27,7 +16,7 @@ export default function NewThreadDialog({
   const [username, setUsername] = useState("");
   const [message, setMessage] = useState("");
   const { userId } = useUser();
-  const [sendMessage] = useMutation(SEND_MESSAGE);
+  const [sendMessage] = useSendMessage();
 
   if (!open) return null;
 
@@ -40,13 +29,12 @@ export default function NewThreadDialog({
         variables: {
           input: {
             content: message,
-            senderId: userId,
             receiverUsername: username,
           },
         },
       });
 
-      onThreadCreated(result.data.sendMessage.threadId);
+      onThreadCreated(result.data?.sendMessage.threadId ?? "");
       setUsername("");
       setMessage("");
     } catch (error) {

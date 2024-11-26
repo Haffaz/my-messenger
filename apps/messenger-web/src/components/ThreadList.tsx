@@ -1,26 +1,11 @@
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { useUser } from "../contexts/UserContext";
+import { GET_THREADS } from "../graphql/getThreads";
 
-const GET_THREADS = gql`
-  query GetThreads {
-    threads {
-      id
-      participants {
-        id
-        username
-      }
-      lastMessage {
-        content
-        createdAt
-      }
-    }
-  }
-`;
-
-interface ThreadListProps {
+type ThreadListProps = {
   selectedThreadId: string | null;
   onThreadSelect: (threadId: string) => void;
-}
+};
 
 export default function ThreadList({
   selectedThreadId,
@@ -30,16 +15,22 @@ export default function ThreadList({
   const { userId } = useUser();
 
   if (loading) return <div className="p-4">Loading...</div>;
-  if (error)
+
+  if (error) {
+    console.error("Error loading threads:", error);
     return <div className="p-4 text-red-500">Error loading threads</div>;
+  }
+
+  if (!data?.threads) {
+    return <div className="p-4">No threads found</div>;
+  }
 
   return (
     <div className="overflow-y-auto">
-      {data?.threads.map((thread: any) => {
+      {data.threads.map((thread) => {
         const otherParticipant = thread.participants.find(
-          (p: any) => p.id !== userId,
+          (participant) => participant.id !== userId,
         );
-
         return (
           <div
             key={thread.id}
