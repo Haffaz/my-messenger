@@ -5,28 +5,29 @@ import {
   useEffect,
   useState,
 } from "react";
+import { useNavigate } from "react-router-dom";
 
-interface UserContextType {
-  userId: string | null;
-  setUserId: (userId: string | null) => void;
-  token: string | null;
-  setToken: (token: string | null) => void;
-}
+type UserContextType = {
+  userId: string;
+  setUserId: (userId: string) => void;
+  token: string;
+  setToken: (token: string) => void;
+};
 
 const UserContext = createContext<UserContextType | undefined>(undefined);
 
 export function UserProvider({ children }: { children: ReactNode }) {
-  const [userId, setUserId] = useState<string | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [userId, setUserId] = useState("");
+  const [token, setToken] = useState("");
 
   useEffect(() => {
     const savedToken = localStorage.getItem("token");
     const savedUserId = localStorage.getItem("userId");
-    if (savedToken) {
+    if (savedToken && savedUserId) {
       setToken(savedToken);
       setUserId(savedUserId);
     }
-  }, [setToken]);
+  }, []);
 
   return (
     <UserContext.Provider value={{ userId, setUserId, token, setToken }}>
@@ -36,9 +37,15 @@ export function UserProvider({ children }: { children: ReactNode }) {
 }
 
 export function useUser() {
+  const navigate = useNavigate();
   const context = useContext(UserContext);
   if (context === undefined) {
     throw new Error("useUser must be used within a UserProvider");
   }
+
+  if (!context.token || !context.userId) {
+    navigate("/login");
+  }
+
   return context;
 }
