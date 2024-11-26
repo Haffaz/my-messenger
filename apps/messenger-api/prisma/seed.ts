@@ -15,6 +15,11 @@ async function main() {
         passwordHash:
           "$2a$12$LJnC8VThOsThRHFYkW2yqeEXu6CY5tr3djMTbvHxkahsort1Q6EjG",
       },
+      {
+        username: "jeff",
+        passwordHash:
+          "$2a$12$LJnC8VThOsThRHFYkW2yqeEXu6CY5tr3djMTbvHxkahsort1Q6EjG",
+      },
     ],
   });
 }
