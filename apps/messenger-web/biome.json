@@ -8,5 +8,12 @@
     "formatter": {
       "quoteStyle": "double"
     }
+  },
+  "linter": {
+    "rules": {
+      "a11y": {
+        "useKeyWithClickEvents": "off"
+      }
+    }
   }
 }

@@ -1,71 +1,34 @@
-import { gql, useMutation, useQuery, useSubscription } from "@apollo/client";
+import { useQuery, useSubscription } from "@apollo/client";
 import { useState } from "react";
 import { useUser } from "../contexts/UserContext";
+import { Message } from "../graphql/generated/graphql";
+import { GET_MESSAGES } from "../graphql/getMessagesByThreadId";
+import useSendMessage from "../graphql/hooks/useSendMessage";
+import { MESSAGE_SUBSCRIPTION } from "../graphql/messageCreated";
 
-const MESSAGE_SUBSCRIPTION = gql`
-  subscription OnMessageSent($threadId: ID!) {
-    messageCreated(threadId: $threadId) {
-      content
-      id
-      createdAt
-      threadId
-      sender {
-        id
-        username
-      }
-    }
-  }
-`;
-
-const GET_MESSAGES = gql`
-  query GetMessages($threadId: ID!) {
-    messages(threadId: $threadId) {
-      id
-      content
-      createdAt
-      sender {
-        id
-        username
-      }
-    }
-  }
-`;
-
-const SEND_MESSAGE = gql`
-  mutation SendMessage($input: SendMessageInput!) {
-    sendMessage(input: $input) {
-      id
-      content
-      createdAt
-    }
-  }
-`;
-
-interface ChatViewProps {
+type ChatViewProps = {
   threadId: string;
-}
+};
 
 export default function ChatView({ threadId }: ChatViewProps) {
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<Message[]>([]);
 
-  // Query initial messages
   const { loading } = useQuery(GET_MESSAGES, {
     variables: { threadId },
     onCompleted: (data) => {
-      setMessages(data.messages);
+      if (data?.messages) {
+        setMessages(data.messages);
+      }
     },
   });
 
-  // Subscribe to new messages
   useSubscription(MESSAGE_SUBSCRIPTION, {
     variables: { threadId },
     onData: ({ data }) => {
-      console.log("new message", data.data.messageCreated);
-      if (data?.data?.messageCreated) {
-        setMessages((prevMessages) => [
-          ...prevMessages,
-          data.data.messageCreated,
-        ]);
+      if (!data?.data) return;
+      const newMessage = data.data.messageCreated;
+      if (newMessage) {
+        setMessages((prevMessages) => [...prevMessages, newMessage]);
       }
     },
   });
@@ -74,9 +37,7 @@ export default function ChatView({ threadId }: ChatViewProps) {
 
   const { userId } = useUser();
 
-  const [sendMessage] = useMutation(SEND_MESSAGE, {
-    refetchQueries: [{ query: GET_MESSAGES, variables: { threadId } }],
-  });
+  const [sendMessage] = useSendMessage();
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -103,22 +64,24 @@ export default function ChatView({ threadId }: ChatViewProps) {
     <div className="h-full flex flex-col">
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((msg: any) => (
+        {messages.map((message) => (
           <div
-            key={msg.id}
+            key={message.id}
             className={`flex ${
-              msg.sender.id === userId ? "justify-end" : "justify-start"
+              message.sender.id === userId ? "justify-end" : "justify-start"
             }`}
           >
             <div
               className={`max-w-[70%] rounded-lg px-4 py-2 ${
-                msg.sender.id === userId
+                message.sender.id === userId
                   ? "bg-blue-500 text-white"
                   : "bg-gray-200"
               }`}
             >
-              <div className="text-sm font-medium">{msg.sender.username}</div>
-              <div>{msg.content}</div>
+              <div className="text-sm font-medium">
+                {message.sender.username}
+              </div>
+              <div>{message.content}</div>
             </div>
           </div>
         ))}

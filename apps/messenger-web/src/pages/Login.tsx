@@ -1,9 +1,10 @@
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../contexts/UserContext";
+import { graphql } from "../graphql/generated";
 
-const LOGIN_MUTATION = gql`
+const LOGIN_MUTATION = graphql(`  
   mutation Login($input: LoginInput!) {
     login(input: $input) {
       token
@@ -13,7 +14,7 @@ const LOGIN_MUTATION = gql`
       }
     }
   }
-`;
+`);
 
 export default function Login() {
   const [username, setUsername] = useState("");
